@@ -17,10 +17,10 @@ const (
 	LWarn
 	LError
 	LFatal
-	maxLogCycle = 15
 )
 
 var (
+	maxLogCycle              = 15
 	enableDebug              = true
 	defaultLogPath           = getDefaultLogPath()
 	defaultLogLevel          = LDebug
@@ -76,14 +76,12 @@ func (l *FileLog) NewFile(new_path string) error {
 	}
 	deadline := now.Add(-time.Duration(maxLogCycle) * time.Hour * 24)
 	deadlinePath := fmt.Sprintf("%s.%02d-%02d", l.path, deadline.Month(), deadline.Day())
-	// fmt.Println(deadlinePath)
 	if _, err := os.Lstat(deadlinePath); err == nil {
 		os.Remove(deadlinePath)
 	}
 	f, err := os.OpenFile(l.path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0664)
 	if err != nil {
 		panic("create log file error")
-		return err
 	}
 	l.f = f
 	l.t = now
@@ -119,6 +117,10 @@ func SetLevel(level int) {
 		return
 	}
 	fileLog.Level = level
+}
+
+func SetCycle(cycle int) {
+	maxLogCycle = cycle
 }
 
 func SetOutput(path string) {
